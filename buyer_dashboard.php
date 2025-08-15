@@ -11,12 +11,10 @@ $password = "";
 $dbname = "kickslab";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
-
 $buyer_username = $_SESSION['username'];
 
-if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
-}
+if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
+if (!isset($_SESSION['compare'])) $_SESSION['compare'] = [];
 
 if (isset($_POST['add_to_cart'])) {
     $product_id = $_POST['product_id'];
@@ -29,7 +27,17 @@ if (isset($_POST['remove_from_cart'])) {
     unset($_SESSION['cart'][$index]);
 }
 
-// Build SQL query with filters
+if (isset($_POST['add_to_compare'])) {
+    $compare_id = $_POST['product_id'];
+    if (!in_array($compare_id, $_SESSION['compare'])) {
+        $_SESSION['compare'][] = $compare_id;
+    }
+}
+
+if (isset($_POST['clear_compare'])) {
+    $_SESSION['compare'] = [];
+}
+
 $filters = [];
 if (!empty($_GET['color'])) $filters[] = "color='" . $_GET['color'] . "'";
 if (!empty($_GET['brand'])) $filters[] = "brand='" . $_GET['brand'] . "'";
@@ -44,28 +52,27 @@ $products = $conn->query("SELECT * FROM products $where");
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Buyer Dashboard</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-body {
-    margin: 0;
-    padding: 0;
-    background: url("../img/kickslab-banner.png") no-repeat center center fixed;
-    background-size: cover;
-    font-family: Arial, sans-serif;
-}
-.overlay {
-    margin: 20px auto;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 30px;
-    max-width: 1200px;
-    color: #fff;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Buyer Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url("../img/kickslab-banner.png") no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+        .overlay {
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 1200px;
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
 
@@ -128,6 +135,12 @@ body {
                         </div>
                         <button type="submit" name="add_to_cart" class="btn btn-primary w-100">Add to Cart</button>
                     </form>
+
+                    <!-- Compare Button -->
+                    <form method="post" class="mt-2">
+                        <input type="hidden" name="product_id" value="<?= $row['id'] ?>">
+                        <button type="submit" name="add_to_compare" class="btn btn-warning w-100">Add to Compare</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -163,7 +176,22 @@ body {
     <?php else: ?>
         <p>Your cart is empty.</p>
     <?php endif; ?>
-</div>
 
+    <!-- Comparison Panel -->
+    <?php if (count($_SESSION['compare']) >= 2): ?>
+        <div class="mt-4">
+            <a href="compare.php" class="btn btn-info me-2">View Comparison (<?= count($_SESSION['compare']) ?>)</a>
+            <form method="post" class="d-inline">
+                <button name="clear_compare" class="btn btn-sm btn-danger">Clear Comparison</button>
+            </form>
+        </div>
+    <?php endif; ?>
+
+    <!-- Style with AI Feature -->
+    <div class="mt-4">
+        <a href="style_ai.php" class="btn btn-dark">Style with AI</a>
+    </div>
+
+</div>
 </body>
 </html>
