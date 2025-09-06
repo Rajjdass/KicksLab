@@ -82,6 +82,12 @@ $products = $conn->query("SELECT * FROM products $where");
         <a href="logout.php" class="btn btn-danger">Logout</a>
     </div>
 
+    <!-- Feature Buttons -->
+    <div class="mb-4">
+        <a href="style_ai.php" class="btn btn-outline-light me-2">Style with AI</a>
+        <a href="customize_shoe.php" class="btn btn-outline-warning">Design Your Own Shoe</a>
+    </div>
+
     <h4>Filter Products</h4>
     <form method="get" class="row g-2 mb-4 text-dark">
         <div class="col-md-2"><input type="text" name="color" class="form-control" placeholder="Color" value="<?= $_GET['color'] ?? '' ?>"></div>
@@ -136,7 +142,6 @@ $products = $conn->query("SELECT * FROM products $where");
                         <button type="submit" name="add_to_cart" class="btn btn-primary w-100">Add to Cart</button>
                     </form>
 
-                    <!-- Compare Button -->
                     <form method="post" class="mt-2">
                         <input type="hidden" name="product_id" value="<?= $row['id'] ?>">
                         <button type="submit" name="add_to_compare" class="btn btn-warning w-100">Add to Compare</button>
@@ -186,12 +191,6 @@ $products = $conn->query("SELECT * FROM products $where");
             </form>
         </div>
     <?php endif; ?>
-
-    <!-- Style with AI Feature -->
-    <div class="mt-4">
-        <a href="style_ai.php" class="btn btn-dark">Style with AI</a>
-    </div>
-
 </div>
 </body>
 </html>
